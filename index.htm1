@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blooker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      padding: 2em;
+    }
+    .hidden {
+      display: none;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    #answers button {
+      display: block;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Blooker Quiz Game</h1>
+    
+    <div id="setup">
+      <input type="text" id="nickname" placeholder="Enter your nickname"/>
+      <button onclick="startGame()">Join Game</button>
+    </div>
+    
+    <div id="question-container" class="hidden">
+      <h2 id="question">Question appears here</h2>
+      <div id="answers"></div>
+    </div>
+    
+    <div id="result" class="hidden"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is 2 + 2?",
+        options: ["3", "4", "22", "5"],
+        answer: "4"
+      },
+      {
+        question: "Which planet is closest to the sun?",
+        options: ["Earth", "Venus", "Mercury", "Mars"],
+        answer: "Mercury"
+      },
+      {
+        question: "What color do you get when you mix red and blue?",
+        options: ["Green", "Purple", "Orange", "Pink"],
+        answer: "Purple"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let playerName = "";
+
+    function startGame() {
+      playerName = document.getElementById("nickname").value;
+      if (!playerName) return alert("Please enter a nickname!");
+
+      document.getElementById("setup").classList.add("hidden");
+      document.getElementById("question-container").classList.remove("hidden");
+
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById("question").textContent = q.question;
+
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => handleAnswer(opt);
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(selected) {
+      const correct = questions[currentQuestion].answer;
+      if (selected === correct) {
+        score++;
+        alert("Correct!");
+      } else {
+        alert(`Wrong! The correct answer was ${correct}`);
+      }
+
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("question-container").classList.add("hidden");
+      const result = document.getElementById("result");
+      result.classList.remove("hidden");
+      result.innerHTML = `<h2>Great job, ${playerName}!</h2><p>Your score: ${score} / ${questions.length}</p>`;
+    }
+  </script>
+</body>
+</html>
