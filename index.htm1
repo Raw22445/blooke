@@ -1,122 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blooker</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    .container {
-      padding: 2em;
-    }
-    .hidden {
-      display: none;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    #answers button {
-      display: block;
-      margin: 10px auto;
-    }
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 2em; }
+    .hidden { display: none; }
+    input, button { font-size: 1.1em; margin: 0.5em; padding: 0.5em; }
+    #answers button { display: block; margin: 0.5em auto; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Blooker Quiz Game</h1>
-    
-    <div id="setup">
-      <input type="text" id="nickname" placeholder="Enter your nickname"/>
-      <button onclick="startGame()">Join Game</button>
-    </div>
-    
-    <div id="question-container" class="hidden">
-      <h2 id="question">Question appears here</h2>
-      <div id="answers"></div>
-    </div>
-    
-    <div id="result" class="hidden"></div>
+  <h1>Blooker</h1>
+  <div id="setup">
+    <input id="nickname" placeholder="Enter nickname" />
+    <button onclick="startGame()">Start</button>
   </div>
+  <div id="quiz" class="hidden">
+    <h2 id="question">Question text</h2>
+    <div id="answers"></div>
+  </div>
+  <div id="result" class="hidden"></div>
 
   <script>
     const questions = [
-      {
-        question: "What is 2 + 2?",
-        options: ["3", "4", "22", "5"],
-        answer: "4"
-      },
-      {
-        question: "Which planet is closest to the sun?",
-        options: ["Earth", "Venus", "Mercury", "Mars"],
-        answer: "Mercury"
-      },
-      {
-        question: "What color do you get when you mix red and blue?",
-        options: ["Green", "Purple", "Orange", "Pink"],
-        answer: "Purple"
-      }
+      { question: "2 + 2?", options: ["3", "4", "5"], answer: "4" },
+      { question: "Capital of France?", options: ["Berlin", "Paris", "Rome"], answer: "Paris" },
+      { question: "Color of grass?", options: ["Blue", "Green", "Red"], answer: "Green" }
     ];
-
-    let currentQuestion = 0;
-    let score = 0;
-    let playerName = "";
+    let score = 0, index = 0, player = "";
 
     function startGame() {
-      playerName = document.getElementById("nickname").value;
-      if (!playerName) return alert("Please enter a nickname!");
-
+      player = document.getElementById("nickname").value.trim();
+      if (!player) return alert("Enter a name!");
       document.getElementById("setup").classList.add("hidden");
-      document.getElementById("question-container").classList.remove("hidden");
-
-      loadQuestion();
+      document.getElementById("quiz").classList.remove("hidden");
+      showQuestion();
     }
 
-    function loadQuestion() {
-      const q = questions[currentQuestion];
+    function showQuestion() {
+      const q = questions[index];
       document.getElementById("question").textContent = q.question;
-
-      const answersDiv = document.getElementById("answers");
-      answersDiv.innerHTML = "";
-
+      const answers = document.getElementById("answers");
+      answers.innerHTML = "";
       q.options.forEach(opt => {
         const btn = document.createElement("button");
         btn.textContent = opt;
-        btn.onclick = () => handleAnswer(opt);
-        answersDiv.appendChild(btn);
+        btn.onclick = () => checkAnswer(opt);
+        answers.appendChild(btn);
       });
     }
 
-    function handleAnswer(selected) {
-      const correct = questions[currentQuestion].answer;
-      if (selected === correct) {
-        score++;
-        alert("Correct!");
+    function checkAnswer(selected) {
+      if (selected === questions[index].answer) score++;
+      index++;
+      if (index < questions.length) {
+        showQuestion();
       } else {
-        alert(`Wrong! The correct answer was ${correct}`);
+        document.getElementById("quiz").classList.add("hidden");
+        const result = document.getElementById("result");
+        result.classList.remove("hidden");
+        result.innerHTML = `<h2>Good job, ${player}!</h2><p>Your score: ${score} / ${questions.length}</p>`;
       }
-
-      currentQuestion++;
-      if (currentQuestion < questions.length) {
-        loadQuestion();
-      } else {
-        showResults();
-      }
-    }
-
-    function showResults() {
-      document.getElementById("question-container").classList.add("hidden");
-      const result = document.getElementById("result");
-      result.classList.remove("hidden");
-      result.innerHTML = `<h2>Great job, ${playerName}!</h2><p>Your score: ${score} / ${questions.length}</p>`;
     }
   </script>
 </body>
